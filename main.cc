@@ -22,7 +22,7 @@
   ferns_demo; if not, write to the Free Software Foundation, Inc., 51 Franklin
   Street, Fifth Floor, Boston, MA 02110-1301, USA
 */
-#include <cv.h>
+#include <cv.h>		//包含了一个基本的opencv头文件 
 #include <highgui.h>
 
 #include <iostream>
