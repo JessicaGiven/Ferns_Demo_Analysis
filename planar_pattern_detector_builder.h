@@ -23,7 +23,7 @@
 #ifndef planar_pattern_detector_builder_h
 #define planar_pattern_detector_builder_h
 
-#include <vector>
+#include <vector> //vector是STL中的一种数据结构，或者叫容器 功能相当于数组，但是强大很多
 using namespace std;
 
 #include "planar_pattern_detector.h"

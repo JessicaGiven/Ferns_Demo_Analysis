@@ -23,11 +23,11 @@
   Street, Fifth Floor, Boston, MA 02110-1301, USA
 */
 #include <cv.h>		//包含了一个基本的opencv头文件 
-#include <highgui.h>
+#include <highgui.h> //高级图像用户界面接口 比如：弹出个窗口，显示幅图像 就要用到这个模块
 
 #include <iostream>
 #include <string>
-using namespace std;
+using namespace std; //通过声明命名空间来区分不同的类或函数等
 
 #include "mcv.h"
 #include "planar_pattern_detector_builder.h"

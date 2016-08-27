@@ -23,7 +23,8 @@
 #ifndef planar_pattern_detector_h
 #define planar_pattern_detector_h
 
-#include <fstream>
+#include <fstream> //<fstream>库包含了三个基本的类：ifstream, ofstream和fstream。
+//这三个类分别代表一个输入文件，一个输出文件，以及一个输入输出文件。Ifstream类支持>>操作 符，ofstream类支持<<操作符，fstream类同时支持>>和<<操作符
 #include <vector>
 using namespace std;
 
