@@ -30,18 +30,20 @@
 using namespace std; //通过声明命名空间来区分不同的类或函数等
 
 #include "mcv.h"
-#include "planar_pattern_detector_builder.h"
-#include "template_matching_based_tracker.h"
+#include "planar_pattern_detector_builder.h" //检测的头文件
+#include "template_matching_based_tracker.h" //跟踪的头文件
 
-const int max_filename = 1000;
+const int max_filename = 1000; //const修饰的数据类型是指常类型，常类型的变量或对象的值是不能被更新的
 
 enum source_type {webcam_source, sequence_source, video_source};
-
-planar_pattern_detector * detector;
+//在“枚举”类型的定义中列举出所有可能的取值，被说明为该“枚举”类型的变量取值不能超过定义的范围
+planar_pattern_detector * detector; //*一般被称作指针运算符，又叫反向取址运算符
+//声明detector是一个指针变量，指向planar_pattern_detector的类型
 template_matching_based_tracker * tracker;
 
 int mode = 2;
 bool show_tracked_locations = true;
+//C++中 bool如果值非零就为True,为零就是False
 bool show_keypoints = true;
 
 CvFont font;
@@ -59,7 +61,7 @@ void draw_quadrangle(IplImage * frame,
   cvLine(frame, cvPoint(u3, v3), cvPoint(u0, v0), color, thickness);
 }
 
-void draw_detected_position(IplImage * frame, planar_pattern_detector * detector)
+void draw_detected_position(IplImage * frame, planar_pattern_detector * detector) //圈出检测位置
 {
   draw_quadrangle(frame,
 		  detector->detected_u_corner[0], detector->detected_v_corner[0],
@@ -69,7 +71,7 @@ void draw_detected_position(IplImage * frame, planar_pattern_detector * detector
 		  cvScalar(255), 3);
 }
 
-void draw_initial_rectangle(IplImage * frame, template_matching_based_tracker * tracker)
+void draw_initial_rectangle(IplImage * frame, template_matching_based_tracker * tracker) //初始化边框：跟踪得到
 {
   draw_quadrangle(frame,
 		  tracker->u0[0], tracker->u0[1],
@@ -91,8 +93,10 @@ void draw_tracked_position(IplImage * frame, template_matching_based_tracker * t
 
 void draw_tracked_locations(IplImage * frame, template_matching_based_tracker * tracker)
 {
-  for(int i = 0; i < tracker->nx * tracker->ny; i++) {
-    int x1, y1;
+  for(int i = 0; i < tracker->nx * tracker->ny; i++) { 
+//变量tracker指向template_matching_based_tracker的地址，用tracker->ny来使用template_matching_based_tracker中的成员ny？？？？？？？？？？？？？
+//*代表指向nx型的数据
+    int x1, y1; //定义整型变量，如定义一个整型变量i即:int i;接下来就可以为i赋值了，但必须是整型的，范围也有限制。若要赋一个大的数值，可以在int前加long
     tracker->f.transform_point(tracker->m[2 * i], tracker->m[2 * i + 1], x1, y1);
     cvCircle(frame, cvPoint(x1, y1), 3, cvScalar(255, 255, 255), 1);
   }
@@ -125,24 +129,26 @@ void detect_and_draw(IplImage * frame)
 	static bool last_frame_ok=false;
 
 	if (mode == 1 || ((mode==0) && last_frame_ok)) {
+		// ||逻辑或运算符。形式：（布尔值）||（布尔值）or
 		bool ok = tracker->track(frame);
 		last_frame_ok=ok;
+//如果mode=1(only tracking),设置last_frame_ok=ok
 
 
-		if (!ok) {
-			if (mode==0) return detect_and_draw(frame);
+		if (!ok) { //不是模式一时
+			if (mode==0) return detect_and_draw(frame);//mode=0(Detect when tracking fails or for initialization then track)，返回detect_and_draw
 			else {
 				draw_initial_rectangle(frame, tracker);
 				tracker->initialize();
-			}
-		} else {
-			draw_tracked_position(frame, tracker);
-			if (show_tracked_locations) draw_tracked_locations(frame, tracker);
+			}//既不是模式一也不是模式零（既非跟踪也不是初始化）,画初始化跟踪方框
+		} else {//mode=1
+			draw_tracked_position(frame, tracker);//画出跟踪位置
+			if (show_tracked_locations) draw_tracked_locations(frame, tracker);//如果跟踪位置能够展现（为真），标出跟踪位置
 		}
-		cvPutText(frame, "template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));
-	} else {
-		detector->detect(frame);
-
+		cvPutText(frame, "template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));//当mode=1时，标注出"template-based 3D tracking"
+	} else {//当以上三种情况都不是时（mode=1；mode=0；mode不为一和零）
+		detector->detect(frame);//检测器进行检测
+/*
 		if (detector->pattern_is_detected) {
 			last_frame_ok=true;
 
@@ -150,8 +156,9 @@ void detect_and_draw(IplImage * frame)
 					detector->detected_u_corner[1], detector->detected_v_corner[1],
 					detector->detected_u_corner[2], detector->detected_v_corner[2],
 					detector->detected_u_corner[3], detector->detected_v_corner[3]);
+					*/
 
-			if (mode == 3 && tracker->track(frame)) {
+			if (mode == 3 && tracker->track(frame)) {//当mode=3且能够跟踪到
 
 				if (show_keypoints) {
 					draw_detected_keypoints(frame, detector);
