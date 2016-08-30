@@ -50,6 +50,7 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
 
   if (detector->load(detector_data_filename))
     cout << "> [planar_pattern_detector_builder] " << detector_data_filename << " file read." << endl;
+  //cout<<x<<endl<<x;首先输出x变量的值，然后输出一个换行符，最后在输出一次x变量的值（只有基本数据类型以及字符串数组可以直接用cout输出）
   else {
     delete detector;
 

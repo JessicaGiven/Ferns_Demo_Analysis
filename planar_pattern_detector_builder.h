@@ -30,6 +30,11 @@ using namespace std;
 #include "affine_transformation_range.h"
 
 class planar_pattern_detector_builder
+	/*C++中的类相当于一种包含函数的自定义数据类型。
+
+类包含有属性和方法.属性就是这个类具有的数据成员,方法就是这个类的成员函数。
+
+类的实现就是对这些数据成员进行操作,通过成员函数来操作.告诉编译器具体怎么操作数据成员,成员函数具体用来做什么的。*/
 {
  public:
   //! Build the model, with caching.

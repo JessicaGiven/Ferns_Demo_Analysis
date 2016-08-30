@@ -128,20 +128,25 @@ void detect_and_draw(IplImage * frame)
 {
 	static bool last_frame_ok=false;
 
-	if (mode == 1 || ((mode==0) && last_frame_ok)) {
+	if (mode == 1 || ((mode==0) && last_frame_ok)) 
+	{
 		// ||逻辑或运算符。形式：（布尔值）||（布尔值）or
 		bool ok = tracker->track(frame);
 		last_frame_ok=ok;
 //如果mode=1(only tracking),设置last_frame_ok=ok
 
 
-		if (!ok) { //不是模式一时
+		if (!ok) 
+		{ //不是模式一时
 			if (mode==0) return detect_and_draw(frame);//mode=0(Detect when tracking fails or for initialization then track)，返回detect_and_draw
-			else {
+			else 
+			{
 				draw_initial_rectangle(frame, tracker);
 				tracker->initialize();
 			}//既不是模式一也不是模式零（既非跟踪也不是初始化）,画初始化跟踪方框
-		} else {//mode=1
+		} 
+		else 
+		{//mode=1
 			draw_tracked_position(frame, tracker);//画出跟踪位置
 			if (show_tracked_locations) draw_tracked_locations(frame, tracker);//如果跟踪位置能够展现（为真），标出跟踪位置
 		}
@@ -158,9 +163,11 @@ void detect_and_draw(IplImage * frame)
 					detector->detected_u_corner[3], detector->detected_v_corner[3]);
 					*/
 
-			if (mode == 3 && tracker->track(frame)) {//当mode=3且能够跟踪到
+			if (mode == 3 && tracker->track(frame)) //当mode=3且能够跟踪到
+			{
 
-				if (show_keypoints) {
+				if (show_keypoints) 
+				{
 					draw_detected_keypoints(frame, detector);
 					draw_recognized_keypoints(frame, detector);
 				}
@@ -168,15 +175,20 @@ void detect_and_draw(IplImage * frame)
 				if (show_tracked_locations) draw_tracked_locations(frame, tracker);
 
 				cvPutText(frame, "detection+template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));
-			} else {
-				if (show_keypoints) {
+			} 
+			else 
+			{
+				if (show_keypoints) 
+				{
 					draw_detected_keypoints(frame, detector);
 					draw_recognized_keypoints(frame, detector);
 				}
 				draw_detected_position(frame, detector);
 				cvPutText(frame, "detection", cvPoint(10, 30), &font, cvScalar(255, 255, 255));
 			}
-		} else {
+		} 
+           else 
+	     {
 			last_frame_ok=false;
 			if (show_keypoints) draw_detected_keypoints(frame, detector);
 
@@ -184,7 +196,7 @@ void detect_and_draw(IplImage * frame)
 				cvPutText(frame, "detection + template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));
 			else
 				cvPutText(frame, "detection", cvPoint(10, 30), &font, cvScalar(255, 255, 255));
-		}
+		 }
 	}
 
 	cvShowImage("ferns-demo", frame);
@@ -203,29 +215,55 @@ void help(const string& exec_name) {
 }
 
 int main(int argc, char ** argv)
+/*argc是命令行中的参数的个数,argv[]对应每一个参数
+例如
+./a.exe 1 bb
+argc将会是3
+其中
+argv[0]是“./a.exe”
+argv[1]是“1”
+argv[2]是“bb”*/
 {
   string model_image     = "model.bmp";
   string sequence_format = "";
   string video_file = "";
   source_type frame_source = webcam_source;
 
-  for(int i = 0; i < argc; ++i) {
-    if(strcmp(argv[i], "-h") == 0) {
+  for(int i = 0; i < argc; ++i) 
+  {
+    if(strcmp(argv[i], "-h") == 0) 
+/*strcmp:比较两个字符串,在头文件string.h中
+extern int strcmp(const char *s1,const char *s2);
+当s1<s2时，返回为负数；
+当s1=s2时，返回值= 0；
+当s1>s2时，返回正数。
+即：两个字符串自左向右逐个字符相比（按ASCII值大小相比较），直到出现不同的字符或遇'\0'为止。如：
+"A"<"B" "a">"A" "computer">"compare"*/
+    {
       help(argv[0]);
       return 0;
     }
+	/*一般情况下，C++做出来的函数都要求返回一个值，当函数执行正常，且达到了一般情况下的目的，那么就返回0表示正确的调用了该函数，
+	这个0就是返回给主调函数以通知没有出错的；
+	如果函数调用中出错，或者没有按照一般情况执行，那么就返回1，以告知主调函数采取响应策略*/
 
-    if(strcmp(argv[i], "-m") == 0) {
-      if(i == argc - 1) {
+    if(strcmp(argv[i], "-m") == 0) 
+	{
+      if(i == argc - 1) 
+	  {
         cerr << "Missing model name after -m\n";
+		/*cerr：函数，标准错误流，用于显示错误消息
+		默认情况下被关联到标准输出流，但它不被缓冲，也就说错误消息可以直接发送到显示器，而无需等到缓冲区或者新的换行符时，才被显示。一般情况下不被重定向。*/
         help(argv[0]);
         return -1;
       }
-      ++i;
+      ++i;//i++  ：先引用后增加   ++i  ：先增加后引用
       model_image = argv[i];
     }
-    else if(strcmp(argv[i], "-s") == 0) {
-      if(i == argc - 1) {
+    else if(strcmp(argv[i], "-s") == 0) 
+	{
+      if(i == argc - 1) 
+	  {
         cerr << "Missing sequence format after -s\n";
         help(argv[0]);
         return -1;
@@ -234,8 +272,10 @@ int main(int argc, char ** argv)
       sequence_format = argv[i];
       frame_source = sequence_source;
     }
-    else if(strcmp(argv[i], "-v") == 0) {
-      if(i == argc - 1) {
+    else if(strcmp(argv[i], "-v") == 0) 
+	{
+      if(i == argc - 1) 
+	  {
         cerr << "Missing  video filename after -v\n";
         help(argv[0]);
         return -1;
@@ -256,8 +296,21 @@ int main(int argc, char ** argv)
 							       32, 7, 4,
 							       30, 12,
 							       10000, 200);
+/*（1）表示“域操作符”
 
-  if (!detector) {
+　　例：声明了一个类A，类A里声明了一个成员函数void f()，但没有在类的声明里给出f的定义，那么在类外定义f时，
+
+　　就要写成void A::f()，表示这个f()函数是类A的成员函数。
+
+　（2）直接用在全局函数前，表示是全局函数
+
+　　例：在VC里，你可以在调用API 函数里，在API函数名前加：：
+
+　（3）表示引用成员函数及变量，作用域成员运算符
+
+　　例：System::Math::Sqrt() 相当于System.Math.Sqrt()*/
+  if (!detector) 
+  {
     cerr << "Unable to build detector.\n";
     return -1;
   }
@@ -266,7 +319,8 @@ int main(int argc, char ** argv)
 
   tracker = new template_matching_based_tracker();
   string trackerfn = model_image + string(".tracker_data");
-  if (!tracker->load(trackerfn.c_str())) {
+  if (!tracker->load(trackerfn.c_str())) 
+  {
     cout << "Training template matching..."<<endl;
     tracker->learn(detector->model_image,
 		   5, // number of used matrices (coarse-to-fine)
@@ -292,10 +346,12 @@ int main(int argc, char ** argv)
 
   cvNamedWindow("ferns-demo", 1 );
 
-  if(frame_source == webcam_source) {
+  if(frame_source == webcam_source) 
+  {
     capture = cvCaptureFromCAM(0);
   }
-  else if(frame_source == video_source) {
+  else if(frame_source == video_source) 
+  {
     capture = cvCreateFileCapture(video_file.c_str());
   }
 
@@ -303,13 +359,19 @@ int main(int argc, char ** argv)
   int64 timer = cvGetTickCount();
 
   bool stop = false;
-  do {
-    if(frame_source == webcam_source || frame_source == video_source) {
+  do 
+{
+    if(frame_source == webcam_source || frame_source == video_source) 
+	{
       if (cvGrabFrame(capture) == 0) break;
       frame = cvRetrieveFrame(capture);
     }
-    else {
+    else 
+	{
       snprintf(seq_buffer, max_filename, sequence_format.c_str(), frame_id);
+	  /*将可变个参数(...)按照format格式化成字符串，然后将其复制到str中
+(1) 如果格式化后的字符串长度 < size，则将此字符串全部复制到str中，并给其后添加一个字符串结束符('\0')；
+(2) 如果格式化后的字符串长度 >= size，则只将其中的(size-1)个字符复制到str中，并给其后添加一个字符串结束符('\0')，返回值为欲写入的字符串长度。*/
       frame = cvLoadImage(seq_buffer, 1);
       ++frame_id;
     }
@@ -332,8 +394,10 @@ int main(int argc, char ** argv)
     clog << "Detection frame rate: " << fps << " fps         \r";
 
     int key = cvWaitKey(10);
-    if (key >= 0) {
-      switch(char(key)) {
+    if (key >= 0) 
+	{
+      switch(char(key)) 
+	  {
       case '0': mode = 0; break;
       case '1': mode = 1; break;
       case '2': mode = 2; break;
@@ -346,12 +410,14 @@ int main(int argc, char ** argv)
       cout << "mode=" << mode << endl;
     }
 
-    if(frame_source == sequence_source) {
+    if(frame_source == sequence_source) 
+	{
       cvReleaseImage(&frame);
     }
-  } while(!stop);
+ } 
+while(!stop);
 
-  clog << endl;
+  clog << endl;？？？？？？？？？？？？？？？？？？？？？？？？？？
   delete detector;
   delete tracker;
 

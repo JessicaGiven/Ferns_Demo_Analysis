@@ -32,7 +32,8 @@ class keypoint
 {
  public:
   keypoint(void) { index = 0; }
-  keypoint(float u, float v, float scale) { 
+  keypoint(float u, float v, float scale) 
+  { 
     this->u = u; this->v = v; this->scale = scale;
     index = i_bucket = j_bucket = 0;
     score = match_score = class_score = 0.0;
@@ -67,7 +68,7 @@ class keypoint
   float match_score;
   int i_bucket, j_bucket;
 
-  int index; // used to locate the keypoint in the keypoint array after matching.
+  int index; // used to locate the keypoint in the keypoint array阵列 after matching.
   //@}
 };
 
@@ -79,6 +80,7 @@ class keypoint
   \param p the point
 */
 inline CvPoint mcvPoint(keypoint & p)
+	//inline 是内联函数关键字，用来告诉编译器下面这个函数是内联函数，在编译期间对语句进行扩展，而不是在运行期间进行函数调用
 {
   int s = int(p.scale);
   int K = 1 << s;

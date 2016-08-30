@@ -24,7 +24,7 @@
 #define homography06_h
 
 #include <iostream>
-using namespace std;
+using namespace std;//不同的命名空间可以有相同的类名被定义
 
 #include <cv.h>
 

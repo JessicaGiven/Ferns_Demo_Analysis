@@ -30,7 +30,9 @@ class homography_estimator
 {
  public:
   homography_estimator(void);
-  ~homography_estimator(void);
+  ~homography_estimator(void);//~用在类中的析构函数之前，表示该函数是析构函数
+  //析构函数(destructor) 与构造函数相反，当对象结束其生命周期时（例如对象所在的函数已调用完毕），
+  //系统自动执行析构函数。析构函数往往用来做“清理善后” 的工作（例如在建立对象时用new开辟了一片内存空间，应在退出前在析构函数中用delete释放）。
 
   bool estimate(homography06 * H,
                 const float u1, const float v1, const float up1, const float vp1,
@@ -42,6 +44,7 @@ class homography_estimator
   void add_correspondence(float u, float v, float up, float vp);
   void add_correspondence(float u, float v, float up, float vp, float score);
   int ransac(homography06 * H, const float threshold, const int maximum_number_of_iterations,
+	  //RANSAC为RANdom Sample Consensus的缩写，它是根据一组包含异常数据的样本数据集，计算出数据的数学模型参数，得到有效样本数据的算法。
              const float P = 0.99, bool prosac_sampling = true);
 
   bool * inliers;

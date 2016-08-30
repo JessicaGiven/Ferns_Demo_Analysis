@@ -22,17 +22,38 @@
 */
 #ifndef template_matching_based_tracker_h
 #define template_matching_based_tracker_h
+/*头件的中的#ifndef，这是一个很关键的东西。比如你有两个C文件，这两个C文件都include了同一个头文件。而编译时，这两个C文件要一同编译成一个可运行文件，于是问题来了，大量的声明冲突。 
 
+还是把头文件的内容都放在#ifndef和#endif中吧。不管你的头文件会不会被多个文件引用，你都要加上这个。一般格式是这样的： 
+
+#ifndef <标识> 
+#define <标识> 
+
+...... 
+...... 
+
+#endif 
+
+<标识>在理论上来说可以是自由命名的，但每个头文件的这个“标识”都应该是唯一的。标识的命名规则一般是头文件名全大写，前后加下划线，并把文件名中的“.”也变成下划线，如：stdio.h 
+
+#ifndef _STDIO_H_ 
+#define _STDIO_H_ 
+
+...... 
+
+#endif*/
 #include <cv.h>
-#include "homography06.h"
+#include "homography06.h"//单应性
 #include "homography_estimator.h"
 
 class template_matching_based_tracker
 {
  public:
-  template_matching_based_tracker(void);
+  template_matching_based_tracker(void);//此处void表示此函数没有参数
 
   bool load(const char * filename);
+  //加载字符串指针filename
+  //LOAD事件是加载事件，当你窗体加载成功后就会触发的事件，比如说你想初始化某些属性就可以在LOAD事件内完成。
   void save(const char * filename);
 
   void learn(IplImage * image,
@@ -53,11 +74,11 @@ class template_matching_based_tracker
   homography06 f;
 
   //private:
-  void find_2d_points(IplImage * image, int bx, int by);
-  void compute_As_matrices(IplImage * image, int max_motion, int Ns);
-  void move(int x, int y, float & x2, float & y2, int amp);
-  bool normalize(CvMat * V);
-  void add_noise(CvMat * V);
+  void find_2d_points(IplImage * image, int bx, int by);//寻找2d点
+  void compute_As_matrices(IplImage * image, int max_motion, int Ns);//计算矩阵
+  void move(int x, int y, float & x2, float & y2, int amp);//移动
+  bool normalize(CvMat * V);//标准化
+  void add_noise(CvMat * V);//加噪声
   IplImage * compute_gradient(IplImage * image);
   void get_local_maximum(IplImage * G,
 			 int xc, int yc, int w, int h,
