@@ -93,9 +93,9 @@ void draw_tracked_position(IplImage * frame, template_matching_based_tracker * t
 
 void draw_tracked_locations(IplImage * frame, template_matching_based_tracker * tracker)
 {
-  for(int i = 0; i < tracker->nx * tracker->ny; i++) { 
+  for(int i = 0; i < tracker->nx * tracker->ny; i++) { //伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙：nx是什么
 //变量tracker指向template_matching_based_tracker的地址，用tracker->ny来使用template_matching_based_tracker中的成员ny？？？？？？？？？？？？？
-//*代表指向nx型的数据
+//*代表相乘
     int x1, y1; //定义整型变量，如定义一个整型变量i即:int i;接下来就可以为i赋值了，但必须是整型的，范围也有限制。若要赋一个大的数值，可以在int前加long
     tracker->f.transform_point(tracker->m[2 * i], tracker->m[2 * i + 1], x1, y1);
     cvCircle(frame, cvPoint(x1, y1), 3, cvScalar(255, 255, 255), 1);
