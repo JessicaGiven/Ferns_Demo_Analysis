@@ -91,28 +91,29 @@ void draw_tracked_position(IplImage * frame, template_matching_based_tracker * t
 		  cvScalar(255), 3);
 }
 
-void draw_tracked_locations(IplImage * frame, template_matching_based_tracker * tracker)
+void draw_tracked_locations(IplImage * frame, template_matching_based_tracker * tracker)                                                           //为什么跟踪位置也要cvcircle？
 {
   for(int i = 0; i < tracker->nx * tracker->ny; i++) { //伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙伙：nx是什么
 //变量tracker指向template_matching_based_tracker的地址，用tracker->ny来使用template_matching_based_tracker中的成员ny？？？？？？？？？？？？？
 //*代表相乘
     int x1, y1; //定义整型变量，如定义一个整型变量i即:int i;接下来就可以为i赋值了，但必须是整型的，范围也有限制。若要赋一个大的数值，可以在int前加long
-    tracker->f.transform_point(tracker->m[2 * i], tracker->m[2 * i + 1], x1, y1);
+    tracker->f.transform_point(tracker->m[2 * i], tracker->m[2 * i + 1], x1, y1);//模板匹配.CC
     cvCircle(frame, cvPoint(x1, y1), 3, cvScalar(255, 255, 255), 1);
   }
 }
 
-void draw_detected_keypoints(IplImage * frame, planar_pattern_detector * detector)
+void draw_detected_keypoints(IplImage * frame, planar_pattern_detector * detector)//检测到的点
 {
   for(int i = 0; i < detector->number_of_detected_points; i++)
     cvCircle(frame,
 	     cvPoint(detector->detected_points[i].fr_u(),
 		     detector->detected_points[i].fr_v()),
 	     16 * (1 << int(detector->detected_points[i].scale)),
+		 //在运算中是左移运算符，左移一位相当于乘以2，其效率比乘法快 &在cout等当中是流插入符
 	     cvScalar(100), 1);
 }
 
-void draw_recognized_keypoints(IplImage * frame, planar_pattern_detector * detector)
+void draw_recognized_keypoints(IplImage * frame, planar_pattern_detector * detector)                                                           //recognized关键点？？标准点（最稳定的那些）？？
 {
   for(int i = 0; i < detector->number_of_model_points; i++)
     if (detector->model_points[i].class_score > 0)
@@ -123,7 +124,7 @@ void draw_recognized_keypoints(IplImage * frame, planar_pattern_detector * detec
 	       cvScalar(255, 255, 255), 1);
 }
 
-
+			
 void detect_and_draw(IplImage * frame)
 {
 	static bool last_frame_ok=false;
@@ -153,15 +154,14 @@ void detect_and_draw(IplImage * frame)
 		cvPutText(frame, "template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));//当mode=1时，标注出"template-based 3D tracking"
 	} else {//当以上三种情况都不是时（mode=1；mode=0；mode不为一和零）
 		detector->detect(frame);//检测器进行检测
-/*
-		if (detector->pattern_is_detected) {
+	if (detector->pattern_is_detected) {
 			last_frame_ok=true;
 
 			tracker->initialize(detector->detected_u_corner[0], detector->detected_v_corner[0],
 					detector->detected_u_corner[1], detector->detected_v_corner[1],
 					detector->detected_u_corner[2], detector->detected_v_corner[2],
 					detector->detected_u_corner[3], detector->detected_v_corner[3]);
-					*/
+					
 
 			if (mode == 3 && tracker->track(frame)) //当mode=3且能够跟踪到
 			{
@@ -193,7 +193,13 @@ void detect_and_draw(IplImage * frame)
 			if (show_keypoints) draw_detected_keypoints(frame, detector);
 
 			if (mode == 3)
-				cvPutText(frame, "detection + template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));
+				cvPutText(frame, "detection + template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));//（255，255，255）代表白色字体
+	/*void cvPutText( CvArr* img, const char* text, CvPoint org, const CvFont* font,CvScalar color );
+　　img:输入图像
+　　text:要显示的字符串
+　　org:第一个字母左下角的坐标
+　　font:指向字体结构的指针
+　　color:文本的颜色*/
 			else
 				cvPutText(frame, "detection", cvPoint(10, 30), &font, cvScalar(255, 255, 255));
 		 }
@@ -254,7 +260,7 @@ extern int strcmp(const char *s1,const char *s2);
         cerr << "Missing model name after -m\n";
 		/*cerr：函数，标准错误流，用于显示错误消息
 		默认情况下被关联到标准输出流，但它不被缓冲，也就说错误消息可以直接发送到显示器，而无需等到缓冲区或者新的换行符时，才被显示。一般情况下不被重定向。*/
-        help(argv[0]);
+        help(argv[0]);                                                                                                                                 //从argv[0]开始？
         return -1;
       }
       ++i;//i++  ：先引用后增加   ++i  ：先增加后引用
@@ -296,7 +302,8 @@ extern int strcmp(const char *s1,const char *s2);
 							       32, 7, 4,
 							       30, 12,
 							       10000, 200);
-/*（1）表示“域操作符”
+/*::
+  （1）表示“域操作符”
 
 　　例：声明了一个类A，类A里声明了一个成员函数void f()，但没有在类的声明里给出f的定义，那么在类外定义f时，
 
