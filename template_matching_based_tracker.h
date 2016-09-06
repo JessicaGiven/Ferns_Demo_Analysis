@@ -63,7 +63,7 @@ class template_matching_based_tracker
 	     int bx, int by,
 	     int Ns);
 
-  void initialize(void);
+  void initialize(void);//此句表示该函数没有返回值且没有参数，那么为什么int u0...?????????
   void initialize(int u0, int v0,
 		  int u1, int v1,
 		  int u2, int v2,

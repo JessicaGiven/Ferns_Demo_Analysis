@@ -297,11 +297,13 @@ void template_matching_based_tracker::compute_As_matrices(IplImage * image, int 
 }
 
 void template_matching_based_tracker::learn(IplImage * image,
-					    int number_of_levels, int max_motion, int nx, int ny,
+					    int number_of_levels, // number of used matrices (coarse-to-fine)
+						int max_motion, // max motion in pixel used to train to coarser matrix  粗糙矩阵？？？？？？？？
+                        int nx, int ny,// defines a grid. Each cell will have one tracked point.定义一个方框，每个小方框有一个跟踪点
 					    int xUL, int yUL,
 					    int xBR, int yBR,
-					    int bx, int by,
-					    int Ns)
+					    int bx, int by,// neighbordhood for local maxima selection 局部最大点选择的邻域
+					    int Ns)// number of training samples 训练样本数
 {
   this->number_of_levels = number_of_levels;
   this->nx = nx;
@@ -309,6 +311,13 @@ void template_matching_based_tracker::learn(IplImage * image,
 
   m = new int[2 * nx * ny];
   U0 = cvCreateMat(8, 1, CV_32F);
+  /*
+  CvMat*cvCreateMat( int rows, int cols, int type );
+  rows:矩阵行数  cols：矩阵列数  
+  type：矩阵元素类型
+  通常以 CV_<比特数>(S|U|F)C<通道数>型式描述  例如：CV_8UC1 意思是一个8-bit 无符号单通道矩阵, CV_32SC2 意思是一个32-bit 有符号二个通道的矩阵
+  函数 cvCreateMat 为新的矩阵分配头和下面的数据，并且返回一个指向新创建的矩阵的指针
+  */
   u0 = U0->data.fl;
   u0[0] = xUL; u0[1] = yUL;
   u0[2] = xBR; u0[3] = yUL;
@@ -324,11 +333,11 @@ void template_matching_based_tracker::learn(IplImage * image,
   i0 = I0->data.fl;
 
   for(int i = 0; i < nx * ny; i++)
-    i0[i] = mcvRow(image, m[2 * i + 1], unsigned char)[ m[2 * i] ];
+    i0[i] = mcvRow(image, m[2 * i + 1], unsigned char)[ m[2 * i] ];////mcvRow的定义在哪？？？？
   bool ok = normalize(I0);
   if (!ok) {
     cerr << "> in template_matching_based_tracker::learn :" << endl;
-    cerr << "> Template matching: image has not enough contrast." << endl;
+    cerr << "> Template matching: image has not enough contrast." << endl;//图像没有足够的对比度
     return ;
   }
 

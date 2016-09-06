@@ -331,8 +331,8 @@ extern int strcmp(const char *s1,const char *s2);
     cout << "Training template matching..."<<endl;
     tracker->learn(detector->model_image,
 		   5, // number of used matrices (coarse-to-fine)
-		   40, // max motion in pixel used to train to coarser matrix
-		   20, 20, // defines a grid. Each cell will have one tracked point.
+		   40, // max motion in pixel used to train to coarser matrix  ´Ö²Ú¾ØÕó£¿£¿£¿£¿£¿£¿£¿£¿
+		   20, 20, // defines a grid¸ñ×Ó. Each cell will have one tracked point.
 		   detector->u_corner[0], detector->v_corner[1],
 		   detector->u_corner[2], detector->v_corner[2],
 		   40, 40, // neighbordhood for local maxima selection
