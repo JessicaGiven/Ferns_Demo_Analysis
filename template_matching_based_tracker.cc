@@ -28,26 +28,39 @@ using namespace std;
 #include "template_matching_based_tracker.h"
 #include "mcv.h"
 
-template_matching_based_tracker::template_matching_based_tracker(void)
+template_matching_based_tracker::template_matching_based_tracker(void)//说明此函数没有参数传递
 {
 }
 
-bool template_matching_based_tracker::load(const char * filename)
+bool template_matching_based_tracker::load(const char * filename)//加载图像
+/*
+char *const p 修饰指针为常量 指针指向内容可以是变量~既 p＋＋这样的操作不合法 *p='3'合法
+const char * p 是p指向的内容是常量～p是变量～
+~既 p＋＋合法 *p='3' 不合法
+
+把一个声明从右向左读。 
+char * const cp; ( * 读成 pointer to ) 
+cp is a const pointer to char 
+const char * p; 
+p is a pointer to const char; 
+*/
 {
 
-  ifstream f(filename);
+  ifstream f(filename);//ifstream表示定义一个输入流，即f，并且输入流和文件“filename”相关联
 
-  if (!f.good()) 
+  if (!f.good()) //??????????????
+	  //用结构体定义一个实体，引用该实体里面的成员用.操作符
+	  //...............结构指针，引用里面的成员用->
 	  return false;
 
-  cout << "Loading " << filename << "..." << endl;
+  cout << "Loading " << filename << "..." << endl;//Loading部分如何加载如何计算？？？？？？？？？？？？？？？
 
   U0 = cvCreateMat(8, 1, CV_32F);
-  u0 = U0->data.fl;
+  u0 = U0->data.fl;//data.fl???????????????????????/
   for(int i = 0; i < 8; i++)
     f >> u0[i];
-  f >> nx >> ny;
-  m = new int[2 * nx * ny];
+  f >> nx >> ny;//nx,ny:tracked point
+  m = new int[2 * nx * ny];//???????????????????
   for(int i = 0; i < nx * ny; i++)
     f >> m[2 * i] >> m[2 * i + 1];
 
@@ -66,9 +79,9 @@ bool template_matching_based_tracker::load(const char * filename)
   DU = cvCreateMat(8, 1, CV_32F);
   du = DU->data.fl;
 
-  f >> number_of_levels;
+  f >> number_of_levels;//what leves?
 
-  As = new CvMat*[number_of_levels];
+  As = new CvMat*[number_of_levels];//在OpenCV中没有向量(vector)结构。任何时候需要向量，都只需要一个列矩阵
   for(int i = 0; i < number_of_levels; i++) {
     As[i] = cvCreateMat(8, nx * ny, CV_32F);
     for(int j = 0; j < 8; j++)
@@ -112,10 +125,10 @@ void template_matching_based_tracker::save(const char * filename)
 
 void template_matching_based_tracker::move(int x, int y, float & x2, float & y2, int amp)
 {
-  int d = rand() % amp;
-  float a = float(rand() % 720) * 3.14159 * 2.0 / 720;
+  int d = rand() % amp;//rand（）产生随机整数的函数//产生随机整数并对amp取余
+  float a = float(rand() % 720) * 3.14159 * 2.0 / 720;//%：整数取余
 
-  x2 = x + d * cosf(a);
+  x2 = x + d * cosf(a);//cosf：float版本的sin和cos
   y2 = y + d * sinf(a);
 }
 
@@ -125,7 +138,7 @@ bool template_matching_based_tracker::normalize(CvMat * V)
   float * v = V->data.fl;
 
   for(int i = 0; i < V->rows; i++) {
-    sum += v[i];
+    sum += v[i];//sum=sum+v[i]
     sum2 += v[i] * v[i];
   }
 
@@ -134,13 +147,16 @@ bool template_matching_based_tracker::normalize(CvMat * V)
     return false;
 
   float mean = sum / V->rows;
-  float inv_sigma = 1.0 / sqrt(sum2 / V->rows - mean * mean);
+  float inv_sigma = 1.0 / sqrt(sum2 / V->rows - mean * mean);//1.0/开平方（平方和/行数-均值的平方）
+//sqrt平方根函数
+//VC 2008后为重载函数，原型为 float sqrt (float),double sqrt (double),double long sqrt(double long)
+//注意没有sqrt (int)，但是返回值可以为int
 
   // Not enough contrast,  better not put this sample into the training set:
-  if (!finite(inv_sigma))
+  if (!finite(inv_sigma))//如果inv_sigma无穷大
     return false;
 
-  for(int i = 0; i < V->rows; i++)
+  for(int i = 0; i < V->rows; i++)//？？？？？？？？？？？？？
     v[i] = inv_sigma * (v[i] - mean);
 
   return true;
@@ -152,7 +168,7 @@ void template_matching_based_tracker::add_noise(CvMat * V)
 
   float gamma = 0.5 + (3 - 0.7) * float(rand()) / RAND_MAX;
   for(int i = 0; i < V->rows; i++) {
-    v[i] = pow(v[i], gamma) + rand() % 10 - 5;
+    v[i] = pow(v[i], gamma) + rand() % 10 - 5;//pow(x,y);//其作用是计算x的y次方。x、y及函数值都是double型 
     if (v[i] < 0) v[i] = 0;
     if (v[i] > 255) v[i] = 255;
   }
@@ -162,13 +178,40 @@ IplImage * template_matching_based_tracker::compute_gradient(IplImage * image)
 {
   IplImage * dx = cvCreateImage(cvSize(image->width, image->height),
 				IPL_DEPTH_16S, 1);
+  /*
+  IplImage* cvCreateImage( CvSize size, int depth, int channels );
+ 
+　　参数说明：
+ 
+　　size 图像宽、高.
+ 
+　　depth 图像元素的位深度，可以是下面的其中之一：
+ 
+　　IPL_DEPTH_8U - 无符号8位整型
+ 
+　　IPL_DEPTH_8S - 有符号8位整型
+ 
+　　IPL_DEPTH_16U - 无符号16位整型
+ 
+　　IPL_DEPTH_16S - 有符号16位整型
+ 
+　　IPL_DEPTH_32S - 有符号32位整型
+ 
+　　IPL_DEPTH_32F - 单精度浮点数
+ 
+　　IPL_DEPTH_64F - 双精度浮点数
+ 
+　　channels：
+ 
+　　每个元素（像素）通道数.可以是 1, 2, 3 或 4.通道是交叉存取的，例如通常的彩色图像数据排列是：b0 g0 r0 b1 g1 r1 ... 
+  虽然通常 IPL 图象格式可以存贮非交叉存取的图像，并且一些OpenCV 也能处理他, 但是这个函数只能创建交叉存取图像.*/
   IplImage * dy = cvCreateImage(cvSize(image->width, image->height),
 				IPL_DEPTH_16S, 1);
   IplImage * result = cvCreateImage(cvSize(image->width, image->height),
 				    IPL_DEPTH_16S, 1);
   cvSobel(image, dx, 1, 0, 3);
   cvSobel(image, dy, 0, 1, 3);
-  cvMul(dx, dx, dx);
+  cvMul(dx, dx, dx);//两个矩阵对应元素相乘？？
   cvMul(dy, dy, dy);
   cvAdd(dx, dy, result);
 
