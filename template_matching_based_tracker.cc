@@ -226,8 +226,9 @@ void template_matching_based_tracker::get_local_maximum(IplImage * G,
 							int & xm, int & ym)
 {
   int max = -1;
-  for(int v = yc - h / 2; v <= yc + h / 2; v++) {
-    short * row = mcvRow(G, v, short);
+  for(int v = yc - h / 2; v <= yc + h / 2; v++) //h的范围内
+  {
+    short * row = mcvRow(G, v, short);//没找到定义
     for(int u = xc - w / 2; u <= xc + w / 2; u++)
       if (row[u] > max) {
 	max = row[u];
@@ -237,11 +238,11 @@ void template_matching_based_tracker::get_local_maximum(IplImage * G,
   }
 }
 
-void template_matching_based_tracker::find_2d_points(IplImage * image, int bx, int by)
+void template_matching_based_tracker::find_2d_points(IplImage * image, int bx, int by)//找到局部最大值点一共nx个
 {
   IplImage * gradient = compute_gradient(image);
 
-  const float stepx = float(u0[2] - u0[0] - 2 * bx) / (nx - 1);
+  const float stepx = float(u0[2] - u0[0] - 2 * bx) / (nx - 1);//nx：跟踪点小方框的长OR跟踪点的个数？//stepx：x方向的步数//为什么是u0[2]?????????
   const float stepy = float(u0[5] - u0[1] - 2 * by) / (ny - 1);
   for(int j = 0; j < ny; j++)
     for(int i = 0; i < nx; i++)
@@ -249,7 +250,7 @@ void template_matching_based_tracker::find_2d_points(IplImage * image, int bx, i
 			int(u0[0] + bx + i * stepx + 0.5),
 			int(u0[1] + by + j * stepy + 0.5),
 			int(stepx), int(stepy),
-			m[2 * (j * nx + i)],
+			m[2 * (j * nx + i)],//？？？？？？？？？？？？
 			m[2 * (j * nx + i) + 1]);
 
   cvReleaseImage(&gradient);
@@ -257,15 +258,16 @@ void template_matching_based_tracker::find_2d_points(IplImage * image, int bx, i
 
 void template_matching_based_tracker::compute_As_matrices(IplImage * image, int max_motion, int Ns)
 {
-  As = new CvMat*[number_of_levels];
+  As = new CvMat*[number_of_levels];//level？？？？？？？？？？？？？
 
-  CvMat * Y = cvCreateMat(8, Ns, CV_32F);
+  CvMat * Y = cvCreateMat(8, Ns, CV_32F);//Ns：训练样本数
   CvMat * H = cvCreateMat(nx * ny, Ns, CV_32F);
   CvMat * HHt = cvCreateMat(nx * ny, nx * ny, CV_32F);
   CvMat * HHt_inv = cvCreateMat(nx * ny, nx * ny, CV_32F);
   CvMat * Ht_HHt_inv = cvCreateMat(Ns, nx * ny, CV_32F);
 
-  homography06 ft;
+  homography06 ft;//平面单应性：平面的单应性被定义为从一个平面到另一个平面的投影映射。
+ // 比如，一个二维平面上的点映射到摄像机成像仪上的映射就是平面单应性的例子。
 
   for(int level = 0; level < number_of_levels; level++) {
 
@@ -273,7 +275,7 @@ void template_matching_based_tracker::compute_As_matrices(IplImage * image, int 
     while(n < Ns) {
       cout << "Level: " << level << " (" << n << "/" << Ns << " samples done)" << char(13) << flush;
 
-      float u1[8];
+      float u1[8];//？？？？？？？？？？？
 
       float k = exp(1. / (number_of_levels - 1) * log(5.0 / max_motion));
       float amp = pow(k, float(level)) * max_motion;
@@ -290,7 +292,8 @@ void template_matching_based_tracker::compute_As_matrices(IplImage * image, int 
 		  u0[4], u0[5], u1[4], u1[5],
 		  u0[6], u0[7], u1[6], u1[7]);
 
-      for(int i = 0; i < nx * ny; i++) {
+      for(int i = 0; i < nx * ny; i++) 
+	  {
 	int x1, y1;
 
 	ft.transform_point(m[2 * i], m[2 * i + 1], x1, y1);
@@ -298,7 +301,8 @@ void template_matching_based_tracker::compute_As_matrices(IplImage * image, int 
       }
       add_noise(I1);
       bool ok = normalize(I1);
-      if (ok) {
+      if (ok) 
+	  {
 	for(int i = 0; i < nx * ny; i++)
 	  cvmSet(H, i, n, i1[i] - i0[i]);
 	n++;
@@ -311,10 +315,36 @@ void template_matching_based_tracker::compute_As_matrices(IplImage * image, int 
     As[level] = cvCreateMat(8, nx * ny, CV_32F);
 
     cout << " - computing HHt..." << flush;
-    cvGEMM(H, H, 1.0, 0, 0.0, HHt, CV_GEMM_B_T);
-    cout << "done." << endl;
+    cvGEMM(H, H, 1.0, 0, 0.0, HHt, CV_GEMM_B_T);//矩阵的广义乘法运算  
+	/*double cvGEMM(矩阵的广义乘法运算  
+    const CvArr* src1,乘数矩阵  
+    const CvArr* src2,乘数矩阵  
+    double alpha,1号矩阵系数  
+    const CvArr* src3,加权矩阵  
+    double beta,2号矩阵系数  
+    CvArr* dst,结果矩阵  
+    int tABC = 0,变换标记  
+    ); 函数对应的乘法运算公式为：
+	
+	tABC变换标记及其对应的含义
+    CV_GEMM_A_T 转置 src1
+    CV_GEMM_B_T 转置 src2
+    CV_GEMM_C_T 转置 src3
 
+	dst = (alpha*src1)xsrc2+(beta*src3) */
+
+
+    cout << "done." << endl;
     cout << " - inverting HHt..." << flush;
+	/*double cvInvert(矩阵取逆
+     const CvArr* src,目标矩阵
+     CvArr* dst,结果矩阵
+     int method = CV_LU,逆运算方法);
+     其中method有
+     方法的参数值	含义
+     CV_LU	高斯消去法
+     CV_SVD	奇异值分解
+     CV_SVD_SYM	对称矩阵的SVD*/
     if (cvInvert(HHt, HHt_inv, CV_SVD_SYM) == 0) {
       cerr << "> In template_matching_based_tracker::compute_As_matrices :" << endl;
       cerr << " Can't compute HHt matrix inverse!" << endl;
