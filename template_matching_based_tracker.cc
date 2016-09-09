@@ -358,7 +358,7 @@ void template_matching_based_tracker::compute_As_matrices(IplImage * image, int 
     cout << "done." << endl;
     
     cout << " - computing YH(HHt)^-1..." << flush;
-    cvMatMul(Y, Ht_HHt_inv, As[level]);
+    cvMatMul(Y, Ht_HHt_inv, As[level]);//?????????
     cout << "done." << endl;
   }
 
@@ -500,9 +500,12 @@ bool template_matching_based_tracker::track(IplImage * input_frame)
 {
   homography06 fs;
 
-  for(int level = 0; level < number_of_levels; level++) {
-    for(int iter = 0; iter < 5; iter++) {
-      for(int i = 0; i < nx * ny; i++) {
+  for(int level = 0; level < number_of_levels; level++) 
+  {
+    for(int iter = 0; iter < 5; iter++) 
+	{
+      for(int i = 0; i < nx * ny; i++) 
+	  {
 	int x1, y1;
 
 	f.transform_point(m[2 * i], m[2 * i + 1], x1, y1);
@@ -511,7 +514,7 @@ bool template_matching_based_tracker::track(IplImage * input_frame)
 
 	i1[i] = mcvRow(input_frame, y1, unsigned char)[x1];
       }
-      normalize(I1);
+      normalize(I1);//标准化跟踪点？？？
       cvSub(I1, I0, DI);
 
       cvMatMul(As[level], DI, DU);

@@ -424,7 +424,7 @@ extern int strcmp(const char *s1,const char *s2);
  } 
 while(!stop);
 
-  clog << endl;£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿
+  clog << endl;//£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿£¿
   delete detector;
   delete tracker;
 

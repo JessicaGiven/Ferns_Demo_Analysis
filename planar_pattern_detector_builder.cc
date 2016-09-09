@@ -45,6 +45,13 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
   char detector_data_filename[1000];
   if (given_detector_data_filename == 0)
     sprintf(detector_data_filename, "%s.detector_data", image_name);
+  /*
+  %c格式对应的是单个字符，%s格式对应的是字符串。
+  //例：char  a;
+  //char b[20];
+  //scanf("%c",&a);只能输入一个字符。
+  //scanf("%s",b);可以输入一串不超过20字符的字符串。
+  */
   else
     strcpy(detector_data_filename, given_detector_data_filename);
 
@@ -91,6 +98,16 @@ planar_pattern_detector * planar_pattern_detector_builder::force_build(const cha
     sprintf(detector_data_filename, "%s.detector_data", image_name);
   else
     strcpy(detector_data_filename, given_detector_data_filename);
+  /*
+   函数原型 char *strcpy(char *dest,const char *src)
+
+  头文件：#include<string.h>
+
+  功能是：从src地址开始且含有null结束符的字符串复制到以dest地址开始的字符串中，并返回指向dest的指针。
+  通俗的讲就是将 src字符数组复制到dest数组中，如果dest数组本身有数据，会把src里的数据全部复制到dest中，如果dest中有数据小于src地址长度的将会被覆盖，而大于src长度的将保留
+
+  说明：dest的地址长度要足够大，不然会产生溢出。Dest的内存长度要大于等于src的内存长度。
+*/
 
   cout << "> [planar_pattern_detector_builder] Creating file " << detector_data_filename << ":" << endl;
 
@@ -110,16 +127,18 @@ planar_pattern_detector * planar_pattern_detector_builder::force_build(const cha
   return detector;
 }
 
-planar_pattern_detector * planar_pattern_detector_builder::just_load(const char * given_detector_data_filename)
+planar_pattern_detector * planar_pattern_detector_builder::just_load(const char * given_detector_data_filename)//给定的检测数据文件名
 {
   planar_pattern_detector * detector = new planar_pattern_detector();
 
   const char * detector_data_filename = given_detector_data_filename;
 
-  if (detector->load(detector_data_filename)) {
+  if (detector->load(detector_data_filename)) 
+  {
     cout << "> [planar_pattern_detector_builder] " << detector_data_filename << " file read." << endl;
     return detector;
-  } else {
+  } else 
+  {
     cerr << ">! [planar_pattern_detector_builder] Couldn't find file " << detector_data_filename << "." << endl;
     return 0;
   }
@@ -142,21 +161,26 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
 
   detector->model_image = mcvLoadImage(image_name, 0);
   if (detector->model_image == 0) return 0;
-  if (detector->model_image->nChannels != 1) {
+  if (detector->model_image->nChannels != 1) 
+  {
     cerr << ">! [planar_pattern_detector_builder::learn] Wrong image format" << endl;
     return 0;
   }
-
-  if (roi_up_left_u == -1) {
+  //寻找感兴趣区域
+  if (roi_up_left_u == -1) //左上角位置
+  {
     char roi_filename[1000];
     sprintf(roi_filename, "%s.roi", image_name);
     ifstream roif(roi_filename);
-    if (roif.good()) {
+    if (roif.good()) 
+	{
       cout << "> [planar_pattern_detector_builder::learn] Reading ROI from file " << roi_filename << ".\n";
       for(int i = 0; i < 4; i++)
 	roif >> detector->u_corner[i] >> detector->v_corner[i];
       roif.close();
-    } else {
+    } 
+	else 
+	{
       cout << "> [planar_pattern_detector_builder::learn] No ROI file found. Taking the whole image as object." << endl;
 
       detector->u_corner[0] = 0;                                detector->v_corner[0] = 0;
@@ -164,11 +188,13 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
       detector->u_corner[2] = detector->model_image->width - 1; detector->v_corner[2] = detector->model_image->height - 1;
       detector->u_corner[3] = 0;                                detector->v_corner[3] = detector->model_image->height - 1;
     }
-  } else {
+  } 
+  else 
+  {
     detector->u_corner[0] = roi_up_left_u;      detector->v_corner[0] = roi_up_left_v;
     detector->u_corner[1] = roi_bottom_right_u; detector->v_corner[1] = roi_up_left_v;
     detector->u_corner[2] = roi_bottom_right_u; detector->v_corner[2] = roi_bottom_right_v;
-    detector->u_corner[3] = roi_up_left_u;      detector->v_corner[3] = roi_bottom_right_v;
+    detector->u_corner[3] = roi_up_left_u;      detector->v_corner[3] = roi_bottom_right_v;//右下角位置
   }
 
   detector->patch_size = patch_size;
