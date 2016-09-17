@@ -43,9 +43,17 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
   detector->image_generator->set_transformation_range(range);
 
   char detector_data_filename[1000];
-  if (given_detector_data_filename == 0)
+  if (given_detector_data_filename == 0)//没有给定检测文件时，将图像名写入detector_data_filename
     sprintf(detector_data_filename, "%s.detector_data", image_name);
   /*
+  字符串格式化命令，主要功能是把格式化的数据写入某个字符串中
+  函数原型
+  int sprintf( char *buffer, const char *format, [argument] … );
+  参数列表
+  buffer：char型指针，指向将要写入的字符串的缓冲区。
+  format：格式化字符串。
+  [argument]...：可选参数，可以是任何类型的数据。
+ 
   %c格式对应的是单个字符，%s格式对应的是字符串。
   //例：char  a;
   //char b[20];
@@ -54,7 +62,11 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
   */
   else
     strcpy(detector_data_filename, given_detector_data_filename);
-
+/*
+  把从src地址开始且含有'\0'结束符的字符串复制到以dest开始的地址空间
+  原型声明：char *strcpy(char* dest, const char *src);
+  src和dest所指内存区域不可以重叠且dest必须有足够的空间来容纳src的字符串。返回指向dest的指针。
+  */
   if (detector->load(detector_data_filename))
     cout << "> [planar_pattern_detector_builder] " << detector_data_filename << " file read." << endl;
   //cout<<x<<endl<<x;首先输出x变量的值，然后输出一个换行符，最后在输出一次x变量的值（只有基本数据类型以及字符串数组可以直接用cout输出）
@@ -81,7 +93,7 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
   return detector;
 }
 
-planar_pattern_detector * planar_pattern_detector_builder::force_build(const char * image_name,
+planar_pattern_detector * planar_pattern_detector_builder::force_build(const char * image_name,//？？？？？？？？
 								       affine_transformation_range * range,
 								       int maximum_number_of_points_on_model,
 								       int number_of_generated_images_to_find_stable_points,
@@ -166,8 +178,8 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
     cerr << ">! [planar_pattern_detector_builder::learn] Wrong image format" << endl;
     return 0;
   }
-  //寻找感兴趣区域
-  if (roi_up_left_u == -1) //左上角位置
+  //寻找感兴趣区域,如果没有感兴趣区域，则将整个图像作为目标
+  if (roi_up_left_u == -1) //左上角位置,-1表示判断，非零，与数字没有关系
   {
     char roi_filename[1000];
     sprintf(roi_filename, "%s.roi", image_name);
@@ -189,7 +201,7 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
       detector->u_corner[3] = 0;                                detector->v_corner[3] = detector->model_image->height - 1;
     }
   } 
-  else 
+  else //？？？？？？
   {
     detector->u_corner[0] = roi_up_left_u;      detector->v_corner[0] = roi_up_left_v;
     detector->u_corner[1] = roi_bottom_right_u; detector->v_corner[1] = roi_up_left_v;
@@ -207,7 +219,7 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
   detector->image_generator->set_transformation_range(range);
 
 
-  detector->pyramid = new fine_gaussian_pyramid(yape_radius, patch_size, number_of_octaves);
+  detector->pyramid = new fine_gaussian_pyramid(yape_radius, patch_size, number_of_octaves);//高斯金字塔分为组octaves，组里面分为层level。
 
   detect_most_stable_model_points(detector,
 				  maximum_number_of_points_on_model,
@@ -226,7 +238,7 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
   cout << "> [planar_pattern_detector_builder] Ok." << endl;
 
   cout << "> [planar_pattern_detector_builder] Training: " << endl;
-  detector->classifier->reset_leaves_distributions();
+  detector->classifier->reset_leaves_distributions();//重置叶子分布
   cout << "   - leaves distributions reset ok. " << flush;
   detector->classifier->train(detector->model_points, detector->number_of_model_points,
 			      number_of_octaves, yape_radius, number_of_samples_for_refinement,
@@ -234,9 +246,10 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
 
   cout << "   - training... " << number_of_samples_for_refinement << " images generated." << endl;
   detector->classifier->finalize_training();
-  cout << "   - posterior probabilities computed." << endl;
+  cout << "   - posterior probabilities computed." << endl;//后验概率计算
 
   cout << "   - testing:" << endl;
+  //平均识别率如何计算？
   detector->mean_recognition_rate = detector->classifier->test(detector->model_points, detector->number_of_model_points,
 							       number_of_octaves, yape_radius, number_of_samples_for_test,
 							       detector->image_generator);
@@ -244,7 +257,12 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
   return detector;
 }
 
-static bool cmp_tmp_model_points(pair<keypoint, int> p1, pair<keypoint, int> p2)
+//函数cmp_tmp_model_points需要返回一个bool类型的值，其中的p1，p2代表该函数的参数
+//static：静态成员函数
+static bool cmp_tmp_model_points(pair<keypoint, int> p1, pair<keypoint, int> p2)//？？？
+	/*pair是一种模板类型，其中包含两个数据值，两个数据的类型可以不同
+	pair<int, string> a;
+    表示a中有两个类型，第一个元素是int型的，第二个元素是string类型的，如果创建pair的时候没有对其进行初始化，则调用默认构造函数对其初始化。*/
 {
   return p1.second > p2.second;
 }
@@ -255,10 +273,10 @@ void planar_pattern_detector_builder::detect_most_stable_model_points(planar_pat
 								      int number_of_generated_images,
 								      double minimum_number_of_views_rate)
 {
-  cout << "> [planar_pattern_detector_builder] Determining most stable points:" << endl;
+  cout << "> [planar_pattern_detector_builder] Determining most stable points:" << endl;//判决
 
   const int K = 2;
-  vector< pair<keypoint, int> > tmp_model_point_vector;
+  vector< pair<keypoint, int> > tmp_model_point_vector;//???
 
   fine_gaussian_pyramid    * pyramid         = detector->pyramid;
   affine_image_generator06 * image_generator = detector->image_generator;
@@ -270,36 +288,41 @@ void planar_pattern_detector_builder::detect_most_stable_model_points(planar_pat
   if (point_detector == 0) detector->point_detector = new pyr_yape06(); point_detector = detector->point_detector;
   keypoint * tmp_model_point_array = new keypoint[K * maximum_number_of_points_on_model];
 
-  for(int i = 0; i < number_of_generated_images; i++) {
+  for(int i = 0; i < number_of_generated_images; i++) 
+  {
     cout << "   (Generating views: " << number_of_generated_images - i << ")     \r" << flush;
     
     if (i == 0) image_generator->generate_Id_image();
     else        image_generator->generate_random_affine_image();
     pyramid->set_image(image_generator->generated_image);
 
-    int current_detected_point_number = detector->point_detector->detect(pyramid, tmp_model_point_array,
+    int current_detected_point_number = detector->point_detector->detect(pyramid, tmp_model_point_array,//得到当前检测点的数量
 									 K * maximum_number_of_points_on_model);
 
-    for(int j = 0; j < current_detected_point_number; j++) {
+    for(int j = 0; j < current_detected_point_number; j++) 
+	{
       keypoint * k = tmp_model_point_array + j;
       float nu, nv;
 
-      image_generator->inverse_affine_transformation(k->fr_u(), k->fr_v(), nu, nv);
+      image_generator->inverse_affine_transformation(k->fr_u(), k->fr_v(), nu, nv);//对当前检测到的点进行逆仿射变换得到nu，nv？？？
       nu = fine_gaussian_pyramid::convCoordf(nu, 0, int(k->scale));
       nv = fine_gaussian_pyramid::convCoordf(nv, 0, int(k->scale));
 
-      keypoint kd(nu, nv, k->scale);
+      keypoint kd(nu, nv, k->scale);//将nu，nv与检测点比较？？
       if (kd.fr_u() >= detector->u_corner[0] && kd.fr_u() <= detector->u_corner[1] &&
-	  kd.fr_v() >= detector->v_corner[0] && kd.fr_v() <= detector->v_corner[3])	{
+	  kd.fr_v() >= detector->v_corner[0] && kd.fr_v() <= detector->v_corner[3])	
+	  {
 	pair<keypoint, int> * mp = search_for_existing_model_point(&tmp_model_point_vector, nu, nv, int(k->scale));
 
 	if (mp != 0) {
-	  // Move the keypoint coordinates in the center of gravity of all agglomerated keypoints:
+	  // Move the keypoint coordinates in the center of gravity of all agglomerated keypoints:移动（在所有团簇点的重心位置）的关键点坐标
 	  float n = float(mp->second);
 	  mp->first.u = (mp->first.u * (n - 1) + nu) / n;
 	  mp->first.v = (mp->first.v * (n - 1) + nv) / n;
 	  mp->second++;
-	} else {
+	} 
+	else 
+	{
 	  keypoint op(nu, nv, k->scale);
 	  tmp_model_point_vector.push_back(pair<keypoint, int>(op, 1));
 	}

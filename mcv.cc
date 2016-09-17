@@ -483,7 +483,7 @@ IplImage * mcvCreateSimilarImage(IplImage * image)
   return cvCreateImage(cvSize(image->width, image->height), image->depth, image->nChannels);
 }
 
-IplImage * mcvLoadImage(const char * filename, int code, bool verbose)
+IplImage * mcvLoadImage(const char * filename, int code, bool verbose)//verboseœÍœ∏–≈œ¢
 {
   if (verbose)
     cout << "(loading " << filename << "..." << flush;
