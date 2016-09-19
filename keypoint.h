@@ -58,7 +58,7 @@ class keypoint
   float fr_v(void) { int s = int(scale);  int K = 1 << s;  return K * v; }
   //@}
 
-  //! Use \ref keypoint_orientation_corrector to compute keypoint orientation:
+  //! Use \ref keypoint_orientation_corrector to compute keypoint orientation:关键点方向校正
   float orientation_in_radians; //!< Between 0 and 2 Pi
 
   //@{

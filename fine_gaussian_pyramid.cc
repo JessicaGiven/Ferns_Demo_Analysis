@@ -276,8 +276,9 @@ void fine_gaussian_pyramid::alloc(int width, int height, int outer_border, int n
 
 void fine_gaussian_pyramid::set_image(const IplImage * image)
 {
-  if (width + 2 * inner_border != image->width || height + 2 * inner_border != image->height) {
-    free();
+  if (width + 2 * inner_border != image->width || height + 2 * inner_border != image->height) 
+  {
+    free();//¿ÕÏĞ
     alloc(image->width - 2 * inner_border, image->height - 2 * inner_border, outer_border, number_of_octaves, inner_border);
   }
 

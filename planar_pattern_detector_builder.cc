@@ -273,7 +273,7 @@ void planar_pattern_detector_builder::detect_most_stable_model_points(planar_pat
 								      int number_of_generated_images,
 								      double minimum_number_of_views_rate)
 {
-  cout << "> [planar_pattern_detector_builder] Determining most stable points:" << endl;//判决
+  cout << "> [planar_pattern_detector_builder] Determining most stable points:" << endl;// 判决
 
   const int K = 2;
   vector< pair<keypoint, int> > tmp_model_point_vector;//???
@@ -304,7 +304,7 @@ void planar_pattern_detector_builder::detect_most_stable_model_points(planar_pat
       keypoint * k = tmp_model_point_array + j;
       float nu, nv;
 
-      image_generator->inverse_affine_transformation(k->fr_u(), k->fr_v(), nu, nv);//对当前检测到的点进行逆仿射变换得到nu，nv？？？
+      image_generator->inverse_affine_transformation(k->fr_u(), k->fr_v(), nu, nv);//对当前检测到的点进行逆仿射变换得到nu，nv？？？fr_u()???
       nu = fine_gaussian_pyramid::convCoordf(nu, 0, int(k->scale));
       nv = fine_gaussian_pyramid::convCoordf(nv, 0, int(k->scale));
 
@@ -312,7 +312,7 @@ void planar_pattern_detector_builder::detect_most_stable_model_points(planar_pat
       if (kd.fr_u() >= detector->u_corner[0] && kd.fr_u() <= detector->u_corner[1] &&
 	  kd.fr_v() >= detector->v_corner[0] && kd.fr_v() <= detector->v_corner[3])	
 	  {
-	pair<keypoint, int> * mp = search_for_existing_model_point(&tmp_model_point_vector, nu, nv, int(k->scale));
+	pair<keypoint, int> * mp = search_for_existing_model_point(&tmp_model_point_vector, nu, nv, int(k->scale));//满足上述条件是寻找模型上对应的点
 
 	if (mp != 0) {
 	  // Move the keypoint coordinates in the center of gravity of all agglomerated keypoints:移动（在所有团簇点的重心位置）的关键点坐标
