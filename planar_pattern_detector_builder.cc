@@ -273,7 +273,7 @@ void planar_pattern_detector_builder::detect_most_stable_model_points(planar_pat
 								      int number_of_generated_images,
 								      double minimum_number_of_views_rate)
 {
-  cout << "> [planar_pattern_detector_builder] Determining most stable points:" << endl;// еп╬Ж
+  cout << "> [planar_pattern_detector_builder] Determining most stable points:" << endl;// еп╬Ж,,,
 
   const int K = 2;
   vector< pair<keypoint, int> > tmp_model_point_vector;//???
