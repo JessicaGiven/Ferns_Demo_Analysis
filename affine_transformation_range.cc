@@ -28,7 +28,7 @@ using namespace std;
 
 affine_transformation_range::affine_transformation_range(void)
 {
-  set_range_variation_for_theta(0.f, 2.f * 3.1416f);
+  set_range_variation_for_theta(0.f, 2.f * 3.1416f);//0.f表示数据类型是浮点型；0表示整型
   set_range_variation_for_phi(0.f, 3.1516f);
   independent_scaling(0.5, 1.5, 0.5, 1.5);
   //  constrained_scaling(0.7, 1.7, 0.9, 1.1);
@@ -40,7 +40,7 @@ affine_transformation_range::~affine_transformation_range(void)
 
 void affine_transformation_range::load(ifstream & f)
 {
-  f >> min_theta >> max_theta;
+  f >> min_theta >> max_theta;//>>输入流/右移操作
   f >> min_phi >> max_phi;
   f >> scaling_method;
   f >> min_lambda1 >> max_lambda1;
@@ -130,18 +130,20 @@ void affine_transformation_range::constrained_scaling(float p_min_lambda1, float
 }
 
 
-void affine_transformation_range::generate_random_parameters(float & theta, float & phi, 
+void affine_transformation_range::generate_random_parameters(float & theta, float & phi, //float & 运算重载符？theta计算的结果返回一个float值
 							     float & lambda1, float & lambda2)
 {
   theta = min_theta + rand_01() * (max_theta - min_theta);
   phi   = min_phi   + rand_01() * (max_phi - min_phi);
 
-  if (scaling_method == 0) {
+  if (scaling_method == 0) 
+  {
     lambda1 = min_lambda1 + rand_01() * (max_lambda1 - min_lambda1);
     lambda2 = min_lambda2 + rand_01() * (max_lambda2 - min_lambda2);
   } else
-    do {
+    do 
+	{
       lambda1 = min_lambda1 + rand_01() * (max_lambda1 - min_lambda1);
       lambda2 = min_lambda2 + rand_01() * (max_lambda2 - min_lambda2);
-    } while (lambda1 * lambda2 < min_l1_l2 || lambda1 * lambda2 > max_l1_l2);
+    } while (lambda1 * lambda2 < min_l1_l2 || lambda1 * lambda2 > max_l1_l2);//在检查条件是否为真之前，该循环首先会执行一次代码块，然后检查条件是否为真，如果条件为真的话，就会重复这个循环。
 }

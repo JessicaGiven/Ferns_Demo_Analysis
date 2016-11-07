@@ -154,7 +154,8 @@ void detect_and_draw(IplImage * frame)
 		cvPutText(frame, "template-based 3D tracking", cvPoint(10, 30), &font, cvScalar(255, 255, 255));//当mode=1时，标注出"template-based 3D tracking"
 	} else {//当以上三种情况都不是时（mode=1；mode=0；mode不为一和零）
 		detector->detect(frame);//检测器进行检测
-	if (detector->pattern_is_detected) {
+	if (detector->pattern_is_detected) 
+	{
 			last_frame_ok=true;
 
 			tracker->initialize(detector->detected_u_corner[0], detector->detected_v_corner[0],
@@ -246,7 +247,7 @@ extern int strcmp(const char *s1,const char *s2);
 即：两个字符串自左向右逐个字符相比（按ASCII值大小相比较），直到出现不同的字符或遇'\0'为止。如：
 "A"<"B" "a">"A" "computer">"compare"*/
     {
-      help(argv[0]);
+      help(argv[0]);?????
       return 0;
     }
 	/*一般情况下，C++做出来的函数都要求返回一个值，当函数执行正常，且达到了一般情况下的目的，那么就返回0表示正确的调用了该函数，
@@ -294,7 +295,7 @@ extern int strcmp(const char *s1,const char *s2);
 
   affine_transformation_range range;
 
-  detector = planar_pattern_detector_builder::build_with_cache(model_image.c_str(),
+  detector = planar_pattern_detector_builder::build_with_cache(model_image.c_str(),//string.c_str返回当前字符串的首字符地址
 							       &range,
 							       400,
 							       5000,
@@ -322,8 +323,10 @@ extern int strcmp(const char *s1,const char *s2);
     return -1;
   }
 
+  
   detector->set_maximum_number_of_points_to_detect(1000);
 
+  
   tracker = new template_matching_based_tracker();
   string trackerfn = model_image + string(".tracker_data");
   if (!tracker->load(trackerfn.c_str())) 

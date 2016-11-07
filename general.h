@@ -42,7 +42,7 @@ int gf_sqr(const int x);
 
 inline float rand_01(void)
 {
-  return (rand() % RAND_MAX) / (float)RAND_MAX;
+  return (rand() % RAND_MAX) / (float)RAND_MAX;//先取余再做除法
 }
 
 inline float rand_m1p1(void)

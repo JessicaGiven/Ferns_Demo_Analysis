@@ -123,7 +123,8 @@ bool planar_pattern_detector::load(ifstream & f)
   f >> number_of_model_points;
   cout << "> [planar_pattern_detector::load] " << number_of_model_points << " model points." << endl;
   model_points = new keypoint[number_of_model_points];
-  for(int i = 0; i < number_of_model_points; i++) {
+  for(int i = 0; i < number_of_model_points; i++) 
+  {
     f >> model_points[i].u >> model_points[i].v >> model_points[i].scale;
     model_points[i].class_index = i;
   }

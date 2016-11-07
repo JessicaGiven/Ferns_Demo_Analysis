@@ -38,7 +38,7 @@ class affine_transformation_range
 
   //! Global rotation. Default = [0 : 2Pi]
   void set_range_variation_for_theta(float min_theta, float max_theta);
-  //! Skew. Default = [0 : Pi]
+  //! SkewÆ«Àë. Default = [0 : Pi]
   void set_range_variation_for_phi(float min_phi, float max_phi);
   //! Default method. Between 0.5 : 1.5 for both
   void independent_scaling(float min_lambda1, float max_lambda1, float min_lambda2, float max_lambda2);
@@ -52,7 +52,7 @@ class affine_transformation_range
   //  private:
   float min_theta, max_theta;
   float min_phi, max_phi;
-  int scaling_method;
+  int scaling_method;//±ÈÀý£¿
   float min_lambda1, max_lambda1;
   float min_lambda2, max_lambda2;
   float min_l1_l2, max_l1_l2;     // for scaling method = 1 only (constrained scaling)

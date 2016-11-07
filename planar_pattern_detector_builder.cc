@@ -34,8 +34,8 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
 									    int patch_size, int yape_radius, int number_of_octaves,
 									    int number_of_ferns, int number_of_tests_per_fern,
 									    int number_of_samples_for_refinement, int number_of_samples_for_test,
-									    char * given_detector_data_filename,
-									    int roi_up_left_u, int roi_up_left_v,
+									    char * given_detector_data_filename,//？？？？？？？？？？？
+									    int roi_up_left_u, int roi_up_left_v,//？？？？？？？？？？？
 									    int roi_bottom_right_u, int roi_bottom_right_v)
 {
   planar_pattern_detector * detector = new planar_pattern_detector();
@@ -43,7 +43,7 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
   detector->image_generator->set_transformation_range(range);
 
   char detector_data_filename[1000];
-  if (given_detector_data_filename == 0)//没有给定检测文件时，将图像名写入detector_data_filename
+  if (given_detector_data_filename == 0)//没有给定检测文件时，将image_name格式化，并写入 "%s.detector_data"中，存放在detector_data_filename缓冲区
     sprintf(detector_data_filename, "%s.detector_data", image_name);
   /*
   字符串格式化命令，主要功能是把格式化的数据写入某个字符串中
@@ -70,7 +70,8 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
   if (detector->load(detector_data_filename))
     cout << "> [planar_pattern_detector_builder] " << detector_data_filename << " file read." << endl;
   //cout<<x<<endl<<x;首先输出x变量的值，然后输出一个换行符，最后在输出一次x变量的值（只有基本数据类型以及字符串数组可以直接用cout输出）
-  else {
+  else 
+  {
     delete detector;
 
     cout << "> [planar_pattern_detector_builder] Can't find file " << detector_data_filename << "." << endl;
@@ -93,7 +94,7 @@ planar_pattern_detector * planar_pattern_detector_builder::build_with_cache(cons
   return detector;
 }
 
-planar_pattern_detector * planar_pattern_detector_builder::force_build(const char * image_name,//？？？？？？？？
+planar_pattern_detector * planar_pattern_detector_builder::force_build(const char * image_name,
 								       affine_transformation_range * range,
 								       int maximum_number_of_points_on_model,
 								       int number_of_generated_images_to_find_stable_points,
@@ -169,7 +170,7 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
 {
   planar_pattern_detector * detector = new planar_pattern_detector();
 
-  strcpy(detector->image_name, image_name);
+  strcpy(detector->image_name, image_name);//->指向结构体或者类的指针用来引用对象里面的变量
 
   detector->model_image = mcvLoadImage(image_name, 0);
   if (detector->model_image == 0) return 0;
@@ -178,13 +179,14 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
     cerr << ">! [planar_pattern_detector_builder::learn] Wrong image format" << endl;
     return 0;
   }
-  //寻找感兴趣区域,如果没有感兴趣区域，则将整个图像作为目标
-  if (roi_up_left_u == -1) //左上角位置,-1表示判断，非零，与数字没有关系
+  
+  //寻找感兴趣区域,如果没有感兴趣区域，则将整个图像作为目标//本程序中roi_up_left_u == -1，并且作者给出了roifilename
+  if (roi_up_left_u == -1) //左上角位置,-1表示判断，非零，与数字没有关系//==:是比较,是与==后的数进行比较,相等为真,如果不相等为假。
   {
     char roi_filename[1000];
     sprintf(roi_filename, "%s.roi", image_name);
     ifstream roif(roi_filename);
-    if (roif.good()) 
+    if (roif.good()) //判断是否文件读完,这是文件流的一个函数
 	{
       cout << "> [planar_pattern_detector_builder::learn] Reading ROI from file " << roi_filename << ".\n";
       for(int i = 0; i < 4; i++)
@@ -201,7 +203,7 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
       detector->u_corner[3] = 0;                                detector->v_corner[3] = detector->model_image->height - 1;
     }
   } 
-  else //？？？？？？
+  else //指的是程序中给定感兴趣位置的四个点的坐标//此工程没有在程序中直接给出
   {
     detector->u_corner[0] = roi_up_left_u;      detector->v_corner[0] = roi_up_left_v;
     detector->u_corner[1] = roi_bottom_right_u; detector->v_corner[1] = roi_up_left_v;
@@ -213,8 +215,8 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
   detector->yape_radius = yape_radius;
   detector->number_of_octaves = number_of_octaves;
 
-  detector->image_generator->set_original_image(detector->model_image);
-  detector->image_generator->set_mask(detector->u_corner[0], detector->v_corner[0],
+  detector->image_generator->set_original_image(detector->model_image);//set_original_image（）这个函数不懂
+  detector->image_generator->set_mask(detector->u_corner[0], detector->v_corner[0],//？？
 				      detector->u_corner[2], detector->v_corner[2]);
   detector->image_generator->set_transformation_range(range);
 

@@ -188,12 +188,14 @@ void fern_based_point_classifier::train(keypoint * keypoints, int number_of_keyp
   image_generator->enable_random_background();
 
   cout << endl;
-  for(int i = 0; i < number_of_generated_images; i++) {
+  for(int i = 0; i < number_of_generated_images; i++) 
+  {
     cout << "  (Generating views " << number_of_generated_images - i << ")              \r" << flush;
     image_generator->generate_random_affine_image();
     pyramid->set_image(image_generator->generated_image);
 
-    for(int j = 0; j < number_of_keypoints; j++) {
+    for(int j = 0; j < number_of_keypoints; j++) 
+	{
       keypoint * K = keypoints + j;
       float fr_gu, fr_gv;
       image_generator->affine_transformation(K->fr_u(), K->fr_v(), fr_gu, fr_gv);

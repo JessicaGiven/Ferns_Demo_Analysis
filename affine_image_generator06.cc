@@ -124,12 +124,13 @@ void affine_image_generator06::set_original_image(IplImage * p_original_image,
 
   if (original_image_with_128_as_background != 0) cvReleaseImage(&original_image_with_128_as_background);
   original_image_with_128_as_background = cvCloneImage(p_original_image);
-  mcvReplace(original_image_with_128_as_background, 128, int(127));
+  mcvReplace(original_image_with_128_as_background, 128, int(127)//mcvReplaceByNoise
 }
 
 void affine_image_generator06::set_mask(int x_min, int y_min, int x_max, int y_max)
 {
-  for(int v = 0; v < original_image_with_128_as_background->height; v++) {
+  for(int v = 0; v < original_image_with_128_as_background->height; v++) 
+  {
     unsigned char * row = mcvRow(original_image_with_128_as_background, v, unsigned char);
     for(int u = 0; u < original_image_with_128_as_background->width; u++)
       if (u < x_min || u > x_max || v < y_min || v > y_max)
