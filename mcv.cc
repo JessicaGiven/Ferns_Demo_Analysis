@@ -524,7 +524,7 @@ void mcvX(IplImage * image, int x, int y, int size, CvScalar color, int width)
   cvLine(image, cvPoint(x + size / 2, y - size / 2), cvPoint(x - size / 2, y + size / 2), color, width);
 }
 
-void mcvCross(IplImage * image, int x, int y, int size, CvScalar color, int width)
+void mcvCross(IplImage * image, int x, int y, int size, CvScalar color, int width)///
 {
   cvLine(image, cvPoint(x - size / 2, y), cvPoint(x + size / 2, y), color, width);
   cvLine(image, cvPoint(x, y - size / 2), cvPoint(x, y + size / 2), color, width);
