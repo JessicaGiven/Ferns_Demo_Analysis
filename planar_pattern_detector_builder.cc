@@ -221,7 +221,7 @@ planar_pattern_detector * planar_pattern_detector_builder::learn(const char * im
   detector->image_generator->set_transformation_range(range);
 
 
-  detector->pyramid = new fine_gaussian_pyramid(yape_radius, patch_size, number_of_octaves);//高斯金字塔分为组octaves，组里面分为层level。
+  detector->pyramid = new fine_gaussian_pyramid(yape_radius, patch_size, number_of_octaves);//高斯金字塔分为组octaves，组里面分为层level。//不懂
 
   detect_most_stable_model_points(detector,
 				  maximum_number_of_points_on_model,
@@ -278,14 +278,14 @@ void planar_pattern_detector_builder::detect_most_stable_model_points(planar_pat
   cout << "> [planar_pattern_detector_builder] Determining most stable points:" << endl;// 判决,,,
 
   const int K = 2;
-  vector< pair<keypoint, int> > tmp_model_point_vector;//???
+  vector< pair<keypoint, int> > tmp_model_point_vector;//creat a zero-size array of pair
 
   fine_gaussian_pyramid    * pyramid         = detector->pyramid;
   affine_image_generator06 * image_generator = detector->image_generator;
   pyr_yape06               * point_detector  = detector->point_detector;
 
-  image_generator->disable_random_background();
-  image_generator->generate_Id_image();
+  image_generator->disable_random_background();//不懂
+  image_generator->generate_Id_image();//不懂//生成仿射变换图像？？
   pyramid->set_image(image_generator->generated_image);
   if (point_detector == 0) detector->point_detector = new pyr_yape06(); point_detector = detector->point_detector;
   keypoint * tmp_model_point_array = new keypoint[K * maximum_number_of_points_on_model];
